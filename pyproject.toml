@@ -7,7 +7,9 @@ authors = [
     { name = "Vera Vorozova", email = "vera.vorozowa@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "prompt>=0.4.1",
+]
 
 [project.scripts]
 project = "primitive_db.main:main"
@@ -15,3 +17,17 @@ project = "primitive_db.main:main"
 [build-system]
 requires = ["uv_build>=0.12.23,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.1",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = ["venv", ".venv", "dist", "_pycache_"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
