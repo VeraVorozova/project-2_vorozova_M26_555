@@ -17,7 +17,7 @@ def create_table(metadata:  dict, table_name: str, columns: list[str]) -> dict:
 
         if col_type not in VALID_TYPES:
             print(
-                f"Некорректный тип данных '{col_type}'."
+                f"Некорректный тип данных '{col_type}'. "
                 f"Поддерживаются: {', '.join(VALID_TYPES)}"
             )
             return metadata

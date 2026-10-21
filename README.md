@@ -78,5 +78,4 @@ uv run ruff check
 
 ## 📺 Демонстрация работы (Asciinema)
 
-[![asciinema recording](https://asciinema.org/a/DER_YOUR_ID.svg)](https://asciinema.org/a/DER_YOUR_ID)
-*(Здесь будет ссылка на твою запись терминала)*
+[![asciinema recording](https://asciinema.org/a/DER_YOUR_ID.svg)](https://asciinema.org/a/gpD9t89OzNgF3InE)
