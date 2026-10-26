@@ -8,11 +8,11 @@ from primitive_db.core import (
     create_table,
     delete_records,
     drop_table,
+    info_table,
     insert_record,
     list_tables,
     select_records,
     update_records,
-    info_table,
 )
 from primitive_db.decorators import create_cacher
 from primitive_db.utils import (
