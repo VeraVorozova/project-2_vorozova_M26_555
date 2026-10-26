@@ -120,6 +120,7 @@ def run():
                     continue
                 metadata = drop_table(metadata, args[1])
                 save_metadata(META_FILE, metadata)
+                query_cacher(invalidate_table=table_name)
             elif cmd == "insert" and len(args) > 2 and args[1] == "into":
                 table_name = args[2]
                 # Ожидаем формат: insert into users values val1 val2 ...
@@ -133,6 +134,7 @@ def run():
                 updated_data = insert_record(metadata, table_name, table_data, raw_vals)
                 if updated_data is not None:
                     save_table_data(table_name, updated_data)
+                    query_cacher(invalidate_table=table_name)
             elif cmd == "select" and len(args) > 2 and args[1] == "from":
                 table_name = args[2]
                 table_data = load_table_data(table_name)
@@ -169,6 +171,7 @@ def run():
                 updated_data = update_records(table_data, set_clause, where_clause)
                 if updated_data is not None:
                     save_table_data(table_name, updated_data)
+                    query_cacher(invalidate_table=table_name)
             elif cmd == "delete" and args[1] == "from":
                 # delete from users where ID=1
                 table_name = args[2]
@@ -176,8 +179,10 @@ def run():
                 where_clause = " ".join(args[where_idx + 1 :])
 
                 table_data = load_table_data(table_name)
-                table_data = delete_records(table_data, where_clause)
-                save_table_data(table_name, table_data)
+                updated_data = delete_records(table_data, where_clause)
+                if updated_data is not None:
+                    save_table_data(table_name, updated_data)
+                    query_cacher(invalidate_table=table_name)
             elif cmd == "info" and len(args) > 1:
                 table_name = args[1]
                 table_data = load_table_data(table_name)

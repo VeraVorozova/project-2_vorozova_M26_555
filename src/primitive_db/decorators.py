@@ -53,7 +53,15 @@ def create_cacher():
     """Creates a cacher using a closure.."""
     cache = {}
 
-    def cache_result(key, value_func):
+    def cache_result(key=None, value_func=None, invalidate_table=None):
+        if invalidate_table is not None:
+            keyes_to_delete = [
+                k for k in cache
+                if isinstance(k, tuple) and k[0] == invalidate_table
+            ]
+            for k in keyes_to_delete:
+                del cache[k]
+            return
         if key in cache:
             print("[Кэш] Возвращаем данные из кэша.")
             return cache[key]
