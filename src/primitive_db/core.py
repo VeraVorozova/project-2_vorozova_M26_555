@@ -1,7 +1,10 @@
 from primitive_db.constants import VALID_TYPES
+from primitive_db.decorators import confirm_action, handle_db_errors, log_time
 from primitive_db.parser import parse_condition, parse_values
+from primitive_db.utils import delete_table_file
 
 
+@handle_db_errors
 def create_table(metadata: dict, table_name: str, columns: list[str]) -> dict:
     """Creates a new table schema with automatically prepended ID:int column."""
     if table_name in metadata:
@@ -26,6 +29,8 @@ def create_table(metadata: dict, table_name: str, columns: list[str]) -> dict:
     return metadata
 
 
+@handle_db_errors
+@confirm_action("удаление таблицы")
 def drop_table(metadata: dict, table_name: str) -> dict:
     """Remove a table from metadata."""
     if table_name not in metadata:
@@ -33,10 +38,12 @@ def drop_table(metadata: dict, table_name: str) -> dict:
         return metadata
     
     del metadata[table_name]
+    delete_table_file(table_name)
     print(f'Таблица "{table_name}" успешно удалена.')
     return metadata
 
 
+@handle_db_errors
 def list_tables(metadata: dict) -> None:
     """Lists all existing tables."""
     if not metadata:
@@ -47,6 +54,8 @@ def list_tables(metadata: dict) -> None:
         print(name)
 
 
+@handle_db_errors
+@log_time
 def insert_record(
         metadata: dict, 
         table_name: str, 
@@ -73,6 +82,8 @@ def insert_record(
     return table_data
 
 
+@handle_db_errors
+@log_time
 def select_records(
         table_data: list[dict], 
         where_clause: str | None = None
@@ -86,9 +97,9 @@ def select_records(
     return filtered
 
 
+@handle_db_errors
 def update_records(
-        table_data: list[dict], 
-        set_clause: str, 
+        table_data: list[dict], set_clause: str, 
         where_clause: str
     ) -> list[dict]:
     """Updates records based on a WHERE condition."""
@@ -105,6 +116,8 @@ def update_records(
     return table_data
 
 
+@handle_db_errors
+@confirm_action("удаление записи")
 def delete_records(table_data: list[dict], where_clause: str) -> list[dict]:
     """Deletes records based on a WHERE condition."""
     where_col, where_val = parse_condition(where_clause)
@@ -115,3 +128,17 @@ def delete_records(table_data: list[dict], where_clause: str) -> list[dict]:
 
     print(f"Успешно удалено записей: {deleted_count}.")
     return table_data
+
+
+@handle_db_errors
+def info_table(metadata: dict, table_name: str, table_data: list[dict]) -> None:
+    """Displays information about a table (its structure and the number of records)."""
+    if table_name not in metadata:
+        raise KeyError(f'Таблица "{table_name}" не существует.')
+    
+    schema = metadata[table_name]
+    cols_str = ", ".join(f"{name}:{dtype}" for name, dtype in schema.items())
+    
+    print(f"Таблица: {table_name}")
+    print(f"Столбцы: {cols_str}")
+    print(f"Количество записей: {len(table_data)}")
